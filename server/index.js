@@ -1,6 +1,7 @@
 const express = require("express");
 require("./config");
 const productRoute = require("./api/routes/product");
+const userRoute = require("./api/routes/user");
 const bodyParser = require("body-parser");
 
 const app = express();
@@ -9,6 +10,7 @@ const port = 5000;
 
 // Routes
 app.use("/products", productRoute);
+app.use("/users", userRoute);
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
