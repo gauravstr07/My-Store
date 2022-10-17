@@ -1,23 +1,38 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const User = require("../models/User");
 
 // Create User
-router.post("/", async (req, res) => {
+router.post("/", (req, res) => {
   try {
-    const user = await new User({
-      _id: new mongoose.Types.ObjectId(),
-      name: req.body.name,
-      password: req.body.password,
-      email: req.body.email,
-      phone: req.body.phone,
-      pan: req.body.pan,
-      userType: req.body.userType,
+    bcrypt.hash(req.body.password, 10, (err, hash) => {
+      if (err) {
+        return res.status(500).json({
+          error: err,
+        });
+      } else {
+        const user = new User({
+          _id: new mongoose.Types.ObjectId(),
+          name: req.body.name,
+          password: hash,
+          email: req.body.email,
+          phone: req.body.phone,
+          pan: req.body.pan,
+          userType: req.body.userType,
+        });
+        user
+          .save()
+          .then((result) => {
+            res.status(200).json(result);
+          })
+          .catch((err) => {
+            res.status(400).json(err);
+          });
+      }
     });
-    const result = await user.save();
-    res.status(200).json(result);
   } catch (error) {
     res.status(400).json({
       error: "Internal Server Error >> ",
